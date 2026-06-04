@@ -1894,6 +1894,28 @@ def pdToDev(pd):
   devDeg = numpy.degrees(math.atan(dispM))
   return devDeg
 
+def returnGraph(listA, listB, loc):
+  
+  fig, ax = plt.subplots(figsize = (6, 6))
+
+  if listB == None:
+    ax.plot(listA[0], listA[1], color = cMapTheme(3), lw = 2)
+    ax.set_xlabel(listA[2])
+    ax.set_ylabel(listA[3])
+  else:
+    ax.plot(listA[0], listA[1], color = cMapTheme(3), lw = 2, label = listA[4])
+
+    ax.plot(listB[0], listB[1], color = cMapTheme(3), lw = 2, linestyle = 'dashed',
+             label = listB[4])
+    ax.set_xlabel(listB[2])
+    ax.set_ylabel(listB[3]);
+
+    ax.legend(loc = loc, labelcolor=cMapTheme(7), facecolor= cMapTheme(5),
+            edgecolor=cMapTheme(0))
+
+  ax.set_frame_on(False)
+  return ax
+
 def safeDivide(num, den):
   if den == 0:
       return math.inf if num > 0 else -math.inf
