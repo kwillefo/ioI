@@ -1921,6 +1921,14 @@ def pdToDev(pd):
   devDeg = numpy.degrees(math.atan(dispM))
   return devDeg
 
+def pol2cart(radius, theta):
+    thetaRad = numpy.deg2rad(theta)
+
+    x = radius * numpy.cos(thetaRad)
+    y = radius * numpy.sin(thetaRad)
+
+    return (x, y)
+
 def returnGraph(listA, listB, loc):
   
   fig, ax = plt.subplots(figsize = (6, 6))
