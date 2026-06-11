@@ -1554,6 +1554,160 @@ def drawSphSection(r, chordLength, showConcave):
 
     plt.show()
 
+def drawToricImaging(F, S, C, M, A): 
+
+  fig = plt.figure(figsize = (6, 6))
+  ax = fig.add_subplot(111, projection='3d')
+
+  FmList = list() # list to hold computed powers
+  MList = numpy.linspace(0, 360, 361) # meridians in which to find power (°)
+
+  colors = plt.cm.hsv(numpy.linspace(0, 1, 181))
+
+  numDist = 200 # Number of points to define each ray for smoother lines
+
+  # Calculate focal depths from the principal powers F
+  focal_depth_stronger = 1.0 / max(F)
+  focal_depth_weaker = 1.0 / min(F)
+
+  # Calculate the spherical equivalent power and the corresponding COLC depth
+  F_stronger = max(F)
+  F_weaker = min(F)
+  Fse = (F_stronger + F_weaker) / 2.0
+  focal_depth_COLC = 1.0 / Fse
+
+  # Dynamically determine max_plot_depth to ensure all focal planes are visible
+  current_max_plot_depth = max(focal_depth_stronger, focal_depth_weaker, focal_depth_COLC) * 1.5
+
+  # Define the aperture size for clipping rays and focal lines
+  aperture_limit = 0.5 # Updated to 0.5 for consistency
+
+  # Determine the axis of the principal meridians
+  axis_stronger_meridian = M[F.index(max(F))]
+  axis_weaker_meridian = M[F.index(min(F))]
+
+  h_at_COLC_list = []
+  v_at_COLC_list = []
+
+  for iM in range(len(MList)):
+
+    # meridian in degrees and radians
+    merDeg = MList[iM]
+    merRad = numpy.deg2rad(merDeg)
+
+    # Incident ray position on the lens plane (assuming unit circle aperture)
+    (h0, v0) = ioMod.pol2cart(aperture_limit, merDeg) # Use aperture_limit as radius
+    P0 = numpy.array([h0, 0.0, v0]) # Ray starts from lens plane at y=0
+
+    # Power in that meridian (using the plus cylinder form for consistency with previous behavior if not changed)
+    # The formula `Fm = S + C * numpy.sin(numpy.radians(merDeg - A)) ** 2` was derived from the plus cylinder form in the text.
+    Fm = S_plus + C_plus * numpy.sin(numpy.radians(merDeg - A_plus)) ** 2
+
+    # Focal length in this meridian
+    if Fm != 0:
+      fm = 1/Fm
+    else:
+      fm = float('inf') # Handle zero power, effectively infinite focal length
+
+    # Direction vector for emergent ray, for parallel incident rays (object at infinity)
+    if numpy.isinf(fm):
+      dirVec = numpy.array([0.0, 1.0, 0.0]) # Parallel ray
+    else:
+      dirVec_unnormalized = numpy.array([-h0/fm, 1.0, -v0/fm])
+      dirVec = dirVec_unnormalized / numpy.linalg.norm(dirVec_unnormalized)
+
+    # Define the parameter t for line plotting from lens plane (y=0).
+    max_t_for_ray_plotting = 10.0 # Increased to ensure rays are fully plotted.
+    t = numpy.linspace(0, max_t_for_ray_plotting, numDist)
+
+    # Calculate points on the ray
+    line = P0[None, :] + t[:, None] * dirVec[None, :]
+
+    h = line[:, 0]
+    d = line[:, 1] # This is the depth along the optical axis (y-coordinate)
+    v = line[:, 2]
+
+    # Store h, v values at the COLC plane
+    if dirVec[1] != 0:
+      t_at_COLC = focal_depth_COLC / dirVec[1]
+      if 0 <= t_at_COLC <= max_t_for_ray_plotting:
+        h_at_COLC = P0[0] + t_at_COLC * dirVec[0]
+        v_at_COLC = P0[2] + t_at_COLC * dirVec[2]
+        # Only add points within the aperture limit
+        if numpy.abs(h_at_COLC) <= aperture_limit and numpy.abs(v_at_COLC) <= aperture_limit:
+          h_at_COLC_list.append(h_at_COLC)
+          v_at_COLC_list.append(v_at_COLC)
+
+    col = colors[iM % 180]
+    ax.plot(h, d, v, color = col, lw = 1, alpha = 0.50)
+
+  # --- Plotting the actual Focal Lines ---
+
+  # Stronger focal line
+  focal_line_angle_stronger = axis_stronger_meridian + 90
+  L_stronger = aperture_limit * numpy.abs(1 - (focal_depth_stronger / focal_depth_weaker))
+
+  h_prime_strong = numpy.linspace(-L_stronger, L_stronger, 100) # Changed to span full extent
+  v_prime_strong = numpy.zeros_like(h_prime_strong) # Line is along one axis in its own frame
+
+  h_rotated_strong = h_prime_strong * numpy.cos(numpy.radians(focal_line_angle_stronger)) - v_prime_strong * numpy.sin(numpy.radians(focal_line_angle_stronger))
+  v_rotated_strong = h_prime_strong * numpy.sin(numpy.radians(focal_line_angle_stronger)) + v_prime_strong * numpy.cos(numpy.radians(focal_line_angle_stronger))
+
+  ax.plot(h_rotated_strong,
+          focal_depth_stronger * numpy.ones_like(h_rotated_strong),
+          v_rotated_strong,
+          color='blue', linewidth=3, linestyle='-', label=f'Focal line at 1/{max(F)}D')
+
+  # Weaker focal line
+  focal_line_angle_weaker = axis_weaker_meridian + 90
+  L_weaker = aperture_limit * numpy.abs(1 - (focal_depth_weaker / focal_depth_stronger))
+
+  h_prime_weaker = numpy.linspace(-L_weaker, L_weaker, 100) # Changed to span full extent
+  v_prime_weaker = numpy.zeros_like(h_prime_weaker)
+
+  h_rotated_weaker = h_prime_weaker * numpy.cos(numpy.radians(focal_line_angle_weaker)) - v_prime_weaker * numpy.sin(numpy.radians(focal_line_angle_weaker))
+  v_rotated_weaker = h_prime_weaker * numpy.sin(numpy.radians(focal_line_angle_weaker)) + v_prime_weaker * numpy.cos(numpy.radians(focal_line_angle_weaker))
+
+  ax.plot(h_rotated_weaker,
+          focal_depth_weaker * numpy.ones_like(h_rotated_weaker),
+          v_rotated_weaker,
+          color='green', linewidth=3, linestyle='-', label=f'Focal line at 1/{min(F)}D')
+
+  # Plot the Circle of Least Confusion boundary
+  if h_at_COLC_list and v_at_COLC_list:
+    # Convert lists to numpy arrays for ConvexHull
+    points_at_COLC = numpy.array([h_at_COLC_list, v_at_COLC_list]).T
+
+    # Compute the Convex Hull to get the boundary points
+    if len(points_at_COLC) >= 3:
+      hull = ConvexHull(points_at_COLC)
+      hull_vertices_coords_COLC = points_at_COLC[hull.vertices]
+
+      # Plot the boundary
+      ax.plot(hull_vertices_coords_COLC[:, 0],
+              focal_depth_COLC * numpy.ones_like(hull_vertices_coords_COLC[:, 0]),
+              hull_vertices_coords_COLC[:, 1],
+              color='red', linewidth=3, linestyle='--', label=f'Circle of Least Confusion at 1/{Fse:.2f}D')
+    else:
+      print("Not enough points to compute a Convex Hull for COLC.")
+
+  # Add a legend to distinguish the focal lines and COLC
+  ax.legend()
+
+  # Set axis labels and title for clarity
+  ax.set_xlabel("H (horizontal)")
+  ax.set_ylabel("Depth (optical axis)")
+  ax.set_zlabel("V (vertical)")
+  ax.set_title("Toric Ray Tracer (Emergent Focal Lines and COLC)")
+
+  # Adjust plotting limits for better visualization of focal lines
+  ax.set_xlim(-aperture_limit, aperture_limit)
+  ax.set_ylim(0, current_max_plot_depth) # Use the dynamically adjusted max depth
+  ax.set_zlim(-aperture_limit, aperture_limit)
+  ax.set_box_aspect([1, 2, 1]) # Set aspect ratio for the 3D plot
+  ax.view_init(elev = 20, azim = -30) # Set a good viewing angle
+  plt.show()
+
 def drawWave(v, lam, f):
   if v == None:
     v = lam * f # m/s
