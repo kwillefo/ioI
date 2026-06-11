@@ -1692,6 +1692,9 @@ def drawToricImaging(F, S, C, M, A):
   ax.set_ylabel("Distance From Lens")
 
   # Adjust plotting limits for better visualization of focal lines
+  ax.tick_params(axis='x', labelbottom=False)
+  ax.tick_params(axis='z', labelbottom=False)
+
   ax.set_xlim(-aperSize, aperSize)
   ax.set_ylim(0, maxPlotDist) # Use the dynamically adjusted max depth
   ax.set_zlim(-aperSize, aperSize)
