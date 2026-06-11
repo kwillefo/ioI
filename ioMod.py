@@ -1596,7 +1596,7 @@ def drawToricImaging(F, S, C, M, A):
     merRad = numpy.deg2rad(merDeg)
 
     # Incident ray position on the lens plane (assuming unit circle aperture)
-    (h0, v0) = ioMod.pol2cart(aperture_limit, merDeg) # Use aperture_limit as radius
+    (h0, v0) = pol2cart(aperture_limit, merDeg) # Use aperture_limit as radius
     P0 = numpy.array([h0, 0.0, v0]) # Ray starts from lens plane at y=0
 
     # Power in that meridian (using the plus cylinder form for consistency with previous behavior if not changed)
@@ -1656,7 +1656,7 @@ def drawToricImaging(F, S, C, M, A):
   ax.plot(h_rotated_strong,
           focal_depth_stronger * numpy.ones_like(h_rotated_strong),
           v_rotated_strong,
-          color='blue', linewidth=3, linestyle='-', label=f'Focal line at 1/{max(F)}D')
+          color= cMapTheme(0), linewidth=3, linestyle='-')
 
   # Weaker focal line
   focal_line_angle_weaker = axis_weaker_meridian + 90
@@ -1671,7 +1671,7 @@ def drawToricImaging(F, S, C, M, A):
   ax.plot(h_rotated_weaker,
           focal_depth_weaker * numpy.ones_like(h_rotated_weaker),
           v_rotated_weaker,
-          color='green', linewidth=3, linestyle='-', label=f'Focal line at 1/{min(F)}D')
+          color=cMapTheme(0), linewidth=3, linestyle='-')
 
   # Plot the Circle of Least Confusion boundary
   if h_at_COLC_list and v_at_COLC_list:
@@ -1687,18 +1687,14 @@ def drawToricImaging(F, S, C, M, A):
       ax.plot(hull_vertices_coords_COLC[:, 0],
               focal_depth_COLC * numpy.ones_like(hull_vertices_coords_COLC[:, 0]),
               hull_vertices_coords_COLC[:, 1],
-              color='red', linewidth=3, linestyle='--', label=f'Circle of Least Confusion at 1/{Fse:.2f}D')
+              color=cMapTheme(0), linewidth=3, linestyle='--')
     else:
       print("Not enough points to compute a Convex Hull for COLC.")
 
   # Add a legend to distinguish the focal lines and COLC
-  ax.legend()
 
   # Set axis labels and title for clarity
-  ax.set_xlabel("H (horizontal)")
-  ax.set_ylabel("Depth (optical axis)")
-  ax.set_zlabel("V (vertical)")
-  ax.set_title("Toric Ray Tracer (Emergent Focal Lines and COLC)")
+  ax.set_ylabel("Distance From Lens")
 
   # Adjust plotting limits for better visualization of focal lines
   ax.set_xlim(-aperture_limit, aperture_limit)
