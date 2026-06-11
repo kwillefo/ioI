@@ -1566,25 +1566,23 @@ def drawToricImaging(F, S, C, M, A):
 
   numDist = 200 # Number of points to define each ray for smoother lines
 
-  # Calculate focal depths from the principal powers F
-  focal_depth_stronger = 1.0 / max(F)
-  focal_depth_weaker = 1.0 / min(F)
+  # focal distances
+  fMaxPower = 1.0 / max(F)
+  fMinPower = 1.0 / min(F)
 
-  # Calculate the spherical equivalent power and the corresponding COLC depth
-  F_stronger = max(F)
-  F_weaker = min(F)
-  Fse = (F_stronger + F_weaker) / 2.0
-  focal_depth_COLC = 1.0 / Fse
+  # compute spherical equivalent and COLC location
+  FMax = max(F)
+  Fmin = min(F)
+  Fse = (FMax + Fmin) / 2.0
+  fCOLC = 1.0 / Fse
 
-  # Dynamically determine max_plot_depth to ensure all focal planes are visible
-  current_max_plot_depth = max(focal_depth_stronger, focal_depth_weaker, focal_depth_COLC) * 1.5
-
-  # Define the aperture size for clipping rays and focal lines
-  aperture_limit = 0.5 # Updated to 0.5 for consistency
+  # plotting variables
+  maxPlotDist = max(fMaxPower, fMinPower, fCOLC) * 1.5
+  aperSize = 0.5 # Updated to 0.5 for consistency
 
   # Determine the axis of the principal meridians
-  axis_stronger_meridian = M[F.index(max(F))]
-  axis_weaker_meridian = M[F.index(min(F))]
+  mMax = M[F.index(max(F))]
+  mMin = M[F.index(min(F))]
 
   h_at_COLC_list = []
   v_at_COLC_list = []
@@ -1596,12 +1594,12 @@ def drawToricImaging(F, S, C, M, A):
     merRad = numpy.deg2rad(merDeg)
 
     # Incident ray position on the lens plane (assuming unit circle aperture)
-    (h0, v0) = pol2cart(aperture_limit, merDeg) # Use aperture_limit as radius
+    (h0, v0) = pol2cart(aperSize, merDeg) # Use aperSize as radius
     P0 = numpy.array([h0, 0.0, v0]) # Ray starts from lens plane at y=0
 
     # Power in that meridian (using the plus cylinder form for consistency with previous behavior if not changed)
     # The formula `Fm = S + C * numpy.sin(numpy.radians(merDeg - A)) ** 2` was derived from the plus cylinder form in the text.
-    Fm = S_plus + C_plus * numpy.sin(numpy.radians(merDeg - A_plus)) ** 2
+    Fm = S + C * numpy.sin(numpy.radians(merDeg - A)) ** 2
 
     # Focal length in this meridian
     if Fm != 0:
@@ -1629,23 +1627,21 @@ def drawToricImaging(F, S, C, M, A):
 
     # Store h, v values at the COLC plane
     if dirVec[1] != 0:
-      t_at_COLC = focal_depth_COLC / dirVec[1]
+      t_at_COLC = fCOLC / dirVec[1]
       if 0 <= t_at_COLC <= max_t_for_ray_plotting:
         h_at_COLC = P0[0] + t_at_COLC * dirVec[0]
         v_at_COLC = P0[2] + t_at_COLC * dirVec[2]
         # Only add points within the aperture limit
-        if numpy.abs(h_at_COLC) <= aperture_limit and numpy.abs(v_at_COLC) <= aperture_limit:
+        if numpy.abs(h_at_COLC) <= aperSize and numpy.abs(v_at_COLC) <= aperSize:
           h_at_COLC_list.append(h_at_COLC)
           v_at_COLC_list.append(v_at_COLC)
 
     col = colors[iM % 180]
     ax.plot(h, d, v, color = col, lw = 1, alpha = 0.50)
 
-  # --- Plotting the actual Focal Lines ---
-
   # Stronger focal line
-  focal_line_angle_stronger = axis_stronger_meridian + 90
-  L_stronger = aperture_limit * numpy.abs(1 - (focal_depth_stronger / focal_depth_weaker))
+  focal_line_angle_stronger = mMax + 90
+  L_stronger = aperSize * numpy.abs(1 - (fMaxPower / fMinPower))
 
   h_prime_strong = numpy.linspace(-L_stronger, L_stronger, 100) # Changed to span full extent
   v_prime_strong = numpy.zeros_like(h_prime_strong) # Line is along one axis in its own frame
@@ -1654,13 +1650,13 @@ def drawToricImaging(F, S, C, M, A):
   v_rotated_strong = h_prime_strong * numpy.sin(numpy.radians(focal_line_angle_stronger)) + v_prime_strong * numpy.cos(numpy.radians(focal_line_angle_stronger))
 
   ax.plot(h_rotated_strong,
-          focal_depth_stronger * numpy.ones_like(h_rotated_strong),
+          fMaxPower * numpy.ones_like(h_rotated_strong),
           v_rotated_strong,
           color= cMapTheme(0), linewidth=3, linestyle='-')
 
   # Weaker focal line
-  focal_line_angle_weaker = axis_weaker_meridian + 90
-  L_weaker = aperture_limit * numpy.abs(1 - (focal_depth_weaker / focal_depth_stronger))
+  focal_line_angle_weaker = mMin + 90
+  L_weaker = aperSize * numpy.abs(1 - (fMinPower / fMaxPower))
 
   h_prime_weaker = numpy.linspace(-L_weaker, L_weaker, 100) # Changed to span full extent
   v_prime_weaker = numpy.zeros_like(h_prime_weaker)
@@ -1669,7 +1665,7 @@ def drawToricImaging(F, S, C, M, A):
   v_rotated_weaker = h_prime_weaker * numpy.sin(numpy.radians(focal_line_angle_weaker)) + v_prime_weaker * numpy.cos(numpy.radians(focal_line_angle_weaker))
 
   ax.plot(h_rotated_weaker,
-          focal_depth_weaker * numpy.ones_like(h_rotated_weaker),
+          fMinPower * numpy.ones_like(h_rotated_weaker),
           v_rotated_weaker,
           color=cMapTheme(0), linewidth=3, linestyle='-')
 
@@ -1685,21 +1681,19 @@ def drawToricImaging(F, S, C, M, A):
 
       # Plot the boundary
       ax.plot(hull_vertices_coords_COLC[:, 0],
-              focal_depth_COLC * numpy.ones_like(hull_vertices_coords_COLC[:, 0]),
+              fCOLC * numpy.ones_like(hull_vertices_coords_COLC[:, 0]),
               hull_vertices_coords_COLC[:, 1],
               color=cMapTheme(0), linewidth=3, linestyle='--')
     else:
       print("Not enough points to compute a Convex Hull for COLC.")
 
-  # Add a legend to distinguish the focal lines and COLC
-
   # Set axis labels and title for clarity
   ax.set_ylabel("Distance From Lens")
 
   # Adjust plotting limits for better visualization of focal lines
-  ax.set_xlim(-aperture_limit, aperture_limit)
-  ax.set_ylim(0, current_max_plot_depth) # Use the dynamically adjusted max depth
-  ax.set_zlim(-aperture_limit, aperture_limit)
+  ax.set_xlim(-aperSize, aperSize)
+  ax.set_ylim(0, maxPlotDist) # Use the dynamically adjusted max depth
+  ax.set_zlim(-aperSize, aperSize)
   ax.set_box_aspect([1, 2, 1]) # Set aspect ratio for the 3D plot
   ax.view_init(elev = 20, azim = -30) # Set a good viewing angle
   plt.show()
