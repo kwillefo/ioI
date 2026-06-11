@@ -18,6 +18,7 @@ import numpy
 from numpy import random as npr
 rc('animation', html='jshtml')
 import pandas as pd
+from scipy.spatial import ConvexHull
 import string
 import warnings
 warnings.filterwarnings('ignore')
