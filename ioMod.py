@@ -9,7 +9,7 @@ import matplotlib as mpl
 mpl.rcParams['font.family'] = 'DejaVu Sans'
 mpl.rcParams['font.size'] = 12
 mpl.rcParams['font.weight'] = 'bold'
-from mpl_toolkits.mplot3d import Axes3D
+from mpl_toolkits.mplot3d import Axes3D, art3d
 import matplotlib.pyplot as plt
 import matplotlib.patches as patches
 from matplotlib.animation import FuncAnimation
@@ -1580,6 +1580,10 @@ def drawToricImaging(F, S, C, M, A, MList):
   maxPlotDist = max(fMaxPower, fMinPower, fCOLC) * 1.5
   aperSize = 0.5 # Updated to 0.5 for consistency
 
+  lens = plt.Circle((0, 0), aperSize, color = cMapTheme(2), alpha = 0.3)
+  ax.add_patch(lens)
+  art3d.pathpatch_2d_to_3d(lens, y = 0, z = 0, zdir = 'y')
+
   # Determine the axis of the principal meridians
   mMax = M[F.index(max(F))]
   mMin = M[F.index(min(F))]
@@ -1600,9 +1604,6 @@ def drawToricImaging(F, S, C, M, A, MList):
     # draw incident ray
     col = colors[round(MList[iM] % 180)]
     ax.plot([h0, h0], [-aperSize, 0], [v0, v0], color = col, lw = 1, alpha = 0.50)
-
-    # construct lens aperture
-    ax.scatter(h0, 0, v0, c= cMapTheme(0), s = 50)
 
     # Power in that meridian (using the plus cylinder form for consistency with previous behavior if not changed)
     # The formula `Fm = S + C * numpy.sin(numpy.radians(merDeg - A)) ** 2` was derived from the plus cylinder form in the text.
