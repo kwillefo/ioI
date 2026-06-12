@@ -1597,10 +1597,6 @@ def drawToricImaging(F, S, C, M, A, MList):
     (h0, v0) = pol2cart(aperSize, merDeg) # Use aperSize as radius
     P0 = numpy.array([h0, 0.0, v0]) # Ray starts from lens plane at y=0
 
-    # entering ray
-    print(MList[iM] % 180)
-    print(round(MList[iM] % 180))
-    
     col = colors[round(MList[iM] % 180)]
     ax.plot([h0, h0], [aperSize, 0], [v0, v0], color = col, lw = 1, alpha = 0.50)
 
