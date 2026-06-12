@@ -1582,7 +1582,7 @@ def drawToricImaging(F, S, C, M, A, MList):
 
   lens = plt.Circle((0, 0), aperSize, color = cMapTheme(2), alpha = 0.3)
   ax.add_patch(lens)
-  art3d.pathpatch_2d_to_3d(lens, y = 0, z = 0, zdir = 'y')
+  art3d.pathpatch_2d_to_3d(lens, z = 0, zdir = 'y')
 
   # Determine the axis of the principal meridians
   mMax = M[F.index(max(F))]
