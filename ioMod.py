@@ -1598,7 +1598,10 @@ def drawToricImaging(F, S, C, M, A, MList):
     P0 = numpy.array([h0, 0.0, v0]) # Ray starts from lens plane at y=0
 
     # entering ray
-    col = colors[MList[iM] % 180]
+    print(MList[iM] % 180)
+    print(round(MList[iM] % 180))
+    
+    col = colors[round(MList[iM] % 180)]
     ax.plot([h0, h0], [aperSize, 0], [v0, v0], color = col, lw = 1, alpha = 0.50)
 
     # Power in that meridian (using the plus cylinder form for consistency with previous behavior if not changed)
