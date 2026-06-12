@@ -1555,13 +1555,12 @@ def drawSphSection(r, chordLength, showConcave):
 
     plt.show()
 
-def drawToricImaging(F, S, C, M, A): 
+def drawToricImaging(F, S, C, M, A, MList): 
 
   fig = plt.figure(figsize = (6, 6))
   ax = fig.add_subplot(111, projection='3d')
 
   FmList = list() # list to hold computed powers
-  MList = numpy.linspace(0, 360, 361) # meridians in which to find power (°)
 
   colors = plt.cm.hsv(numpy.linspace(0, 1, 181))
 
