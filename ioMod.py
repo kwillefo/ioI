@@ -303,6 +303,141 @@ def drawCurvedInterface(r, n, np):
 
     plt.show()
 
+def drawCurvedMirror(r, n):
+
+    np = -1 * n # emergent index of refraction
+
+    fig, ax = plt.subplots(figsize=(6, 4))
+    ax.set_aspect('equal', adjustable='box')
+
+    rMag = abs(r)
+    h = rMag * 0.8
+    yVals = numpy.linspace(-h, h, 100)
+
+    if r > 0:
+        xVals = r - numpy.sqrt(r**2 - yVals**2)
+        C = (r, 0)
+    else:
+        xVals = r + numpy.sqrt(r**2 - yVals**2)
+        C = (r, 0)
+
+    F = round(safeDivide(np - n, r), 3) # power
+    print('The power of this surface is: ', F, 'D.')
+    if F < 0:
+        print('The surface is convex.')
+    elif F > 0:
+        print('The surface is concave.')
+
+    incColor = getInterpolatedColor(n)
+    emColor = getInterpolatedColor(np)
+
+    # dynamic adjustment of plot limits
+    xLim = max(abs(xVals).max(), rMag, abs(C[0])) * 1.5
+    yLim = h * 1.5
+    ax.set_xlim(-xLim, xLim)
+    ax.set_ylim(-yLim, yLim)
+    minX, maxX = ax.get_xlim()
+    minY, maxY = ax.get_ylim()
+
+    # incident and emergent medium
+    incPoints = [(xVals[-1], h), (minX, h), (minX, -h), (xVals[0], -h)]
+    incPoints.extend(zip(xVals, yVals))
+    incPatch = patches.Polygon(incPoints, closed=True, facecolor=incColor, alpha=0.3, lw=0)
+    ax.add_patch(incPatch)
+    ax.text(-rMag * 1.2, h * 0.9, f"$n = {n}$", ha = 'center', bbox = tbox)
+    ax.text(-rMag * 1.2, h * -0.9, f"$n' = {-n}$", ha = 'center', bbox = tbox)
+    
+    # emergent medium
+    emPoints = [(xVals[-1], h), (maxX, h), (maxX, -h), (xVals[0], -h)]
+    emPoints.extend(zip(xVals, yVals))
+    emPatch = patches.Polygon(emPoints, closed=True, facecolor= cMapTheme(7), alpha=0.3, lw=0)
+    ax.add_patch(emPatch)
+
+    # curved surface
+    ax.plot(xVals, yVals, color = cMapTheme(1), lw = 4)
+
+    # plot light direction convention
+    lightDirY = minY + (maxY - minY) * 0.05
+    ax.quiver(minX, lightDirY, maxX - minX, 0, color = cMapTheme(0),
+             scale_units = 'xy', scale = 1, width = 0.003)
+
+    # plot optical axis
+    ax.plot([minX, maxX], [0, 0], color = cMapTheme(0), linewidth = 0.5, zorder = 0)
+
+    #> RAYS FOR EACH VERTICAL POSITION ON CURVED SURFACE
+    yPosList = [h * 0.5, h * -0.5]
+    uEmList = list()
+    for yPos in yPosList:
+        try:
+            if r > 0:
+                xPos = r - numpy.sqrt(r**2 - yPos**2)
+            else: # r < 0
+                xPos = r + numpy.sqrt(r**2 - yPos**2)
+        except ValueError: # Added to complete the try block and handle potential sqrt of negative number
+            continue # Skip this iteration if yPos is out of range for r
+
+        # incident ray
+        ax.plot([minX, xPos], [yPos, yPos], color= cMapTheme(0),
+                linestyle = '-', lw = 2)
+
+        # normal
+        # Normal vector pointing from the center of curvature to the point on the surface
+        localNormX = xPos - C[0]
+        localNormY = yPos - C[1]
+        
+        localNormLen = numpy.sqrt(localNormX**2 + localNormY**2)
+
+        if localNormLen > 0:
+            unitVecX = localNormX / localNormLen
+            unitVecY = localNormY / localNormLen
+
+            # Normal segment starts before the interface and ends after it
+            normSegLength = rMag * 0.1
+
+            nx0 = xPos - unitVecX * normSegLength
+            ny0 = yPos - unitVecY * normSegLength
+            nxF = xPos + unitVecX * normSegLength
+            nyF = yPos + unitVecY * normSegLength
+
+            ax.plot([nx0, nxF], [ny0, nyF], color= cMapTheme(0), linestyle=':', lw=1)
+
+            # Incident ray vector (from left, parallel to optical axis)
+            incident_ray_vec_x = 1.0
+            incident_ray_vec_y = 0.0
+
+            # Dot product of incident ray vector and normal vector
+            dot_product = incident_ray_vec_x * unitVecX + incident_ray_vec_y * unitVecY
+
+            # Reflected ray vector (R = I - 2 * (I . N) * N)
+            reflected_ray_vec_x = incident_ray_vec_x - 2 * dot_product * unitVecX
+            reflected_ray_vec_y = incident_ray_vec_y - 2 * dot_product * unitVecY
+
+            # Angle of the emergent (reflected) ray
+            uEm = math.atan2(reflected_ray_vec_y, reflected_ray_vec_x)
+            uEmList.append(uEm)
+
+            # Extend the ray outwards with a sufficient length to cross the plot
+            plot_span_x = maxX - minX
+            plot_span_y = maxY - minY
+            sufficient_length = max(plot_span_x, plot_span_y) * 1.5 
+
+            emxF = xPos + sufficient_length * math.cos(uEm)
+            emyF = yPos + sufficient_length * math.sin(uEm)
+
+            ax.plot([xPos, emxF], [yPos, emyF], color= cMapTheme(0),
+                    linestyle = '-', lw = 2)
+
+    # # vergence approximation: ray orientation across surface
+    # approxLp = round(-1 * (uEmList[0] - uEmList[1]) / (yPosList[0] - yPosList[1]), 3)
+    # # print('The approximate emergent vergence is:', approxLp, 'D.')
+
+    ax.set_frame_on(False)
+    ax.grid(False)
+    ax.set_xticks([])
+    ax.set_yticks([])
+
+    plt.show()
+    
 def drawDevDisp(devThinDeg, prismDiopter, distances):
 
     fig, ax = plt.subplots(figsize = (6, 4))
@@ -1271,7 +1406,7 @@ def drawReflection(n, np, givens, givenVals, randBool, unknowns):
   plt.show()
 
   return round(answer, 3)
-  
+
 def drawRefraction(n, np, givens, givenVals, randBool, unknowns):
 
   # givens
