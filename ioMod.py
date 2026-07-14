@@ -2620,6 +2620,33 @@ def magReporterMerid(L, F, Lp, LM):
     elif LM < 0:
       print('inverted and minified.')
 
+def magReporterMirror(L, F, Lp, LM):
+  if L > 0:
+    print('This virtual object and...')
+  elif L < 0:
+    print('This real object and...')
+
+  if F > 0:
+    print('this concave mirror create...')
+  elif F < 0:
+    print('this convex mirror create...')
+
+  if Lp > 0:
+    print('a real image that is...')
+  elif Lp < 0:
+    print('a virtual image that is...')
+
+  if abs(LM) > 1:
+    if LM > 0:
+      print('erect and magnified.')
+    elif LM < 0:
+      print('inverted and magnified.')
+  elif abs(LM) < 1:
+    if LM > 0:
+      print('erect and minified.')
+    elif LM < 0:
+      print('inverted and minified.')
+
 def pdToDev(pd):
   dispCM = pd # assume a distance of 1 m
   dispM = dispCM / 100 # convert to meters
