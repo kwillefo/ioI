@@ -152,7 +152,7 @@ def computeWaveStats(v, lam, f):
   elif f == None:
     f = v / lam
     answer = f
-  return round(answer, 3)
+  return answer
 
 #> DRAWINGS
 
