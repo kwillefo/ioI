@@ -53,19 +53,19 @@ def computeDeviationThick(n1, theta1, nPrism, A):
   # refraction @ first interface
   n1p = nPrism # emergent refractive index
   theta1p = round(numpy.degrees(math.asin((n1 * math.sin(numpy.radians(theta1)))
-          / n1p)), 3)
+          / n1p)), 2)
 
   # finding second incident angle
   # the sum of the internal angles is equivalent to the apical angle
-  theta2 = round(A - theta1p, 3)
+  theta2 = round(A - theta1p, 2)
 
   # refraction @ second interface
   n2 = nPrism # incident refractive index
   n2p = n1 # emergent refractive index
   try:
     theta2p = round(numpy.degrees(math.asin((n2 * math.sin(numpy.radians(theta2)))
-            / n2p)), 3)
-    devthick = round(theta1 + theta2p - A, 3)
+            / n2p)), 2)
+    devthick = round(theta1 + theta2p - A, 2)
 
   except:
     thetaCrit = round(numpy.degrees(math.asin(n2p/n2)))
@@ -110,12 +110,12 @@ def computeThickPrismRefractions(n1, theta1, A, nPrism):
   print('The first incident angle is:', theta1, '°.')
   n1p = nPrism # emergent refractive index
   theta1p = round(numpy.degrees(math.asin((n1 * math.sin(numpy.radians(theta1)))
-           / n1p)), 3)
+           / n1p)), 2)
   print('The first emergent angle is:', theta1p, '°.')
 
   # finding second incident angle
   # the sum of the internal angles is equivalent to the apical angle
-  theta2 = round(A - theta1p, 3)
+  theta2 = round(A - theta1p, 2)
   print('The second incident angle is:', theta2, '°.')
 
   # refraction @ second interface
@@ -125,12 +125,12 @@ def computeThickPrismRefractions(n1, theta1, A, nPrism):
   n2p = n1 # emergent refractive index
   try:
     theta2p = round(numpy.degrees(math.asin((n2 *math.sin(numpy.radians(theta2)))
-            / n2p)), 3)
+            / n2p)), 2)
     print('The second emergent angle is:', theta2p, '°.')
 
     # deviation of a thick prism
     # found by comparing sum of external angles to the apical angle
-    devthick = round(theta1 + theta2p - A, 3)
+    devthick = round(theta1 + theta2p - A, 2)
     print('The resultant deviation is:', devthick, '°.')
 
   except:
@@ -139,7 +139,7 @@ def computeThickPrismRefractions(n1, theta1, A, nPrism):
     print('That is why Total Internal Reflection occurred at the second interface.')
 
 def computeVergence(n, r):
-  V = round(n/r, 3)
+  V = round(n/r, 2)
   return V
 
 def computeWaveStats(v, lam, f):
@@ -172,7 +172,7 @@ def drawCurvedInterface(r, n, np):
         xVals = r + numpy.sqrt(r**2 - yVals**2)
         C = (r, 0)
 
-    F = round(safeDivide(np - n, r), 3) # power
+    F = round(safeDivide(np - n, r), 2) # power
     print('The power of this surface is: ', F, 'D.')
     if F > 0:
         print('The surface is convex.')
@@ -293,7 +293,7 @@ def drawCurvedInterface(r, n, np):
                     linestyle = '-', lw = 2)
 
     # # vergence approximation: ray orientation across surface
-    # approxLp = round(-1 * (uEmList[0] - uEmList[1]) / (yPosList[0] - yPosList[1]), 3)
+    # approxLp = round(-1 * (uEmList[0] - uEmList[1]) / (yPosList[0] - yPosList[1]), 2)
     # # print('The approximate emergent vergence is:', approxLp, 'D.')
 
     ax.set_frame_on(False)
@@ -321,7 +321,7 @@ def drawCurvedMirror(r, n):
         xVals = r + numpy.sqrt(r**2 - yVals**2)
         C = (r, 0)
 
-    F = round(safeDivide(np - n, r), 3) # power
+    F = round(safeDivide(np - n, r), 2) # power
     print('The power of this surface is: ', F, 'D.')
     if F < 0:
         print('The surface is convex.')
@@ -428,7 +428,7 @@ def drawCurvedMirror(r, n):
                     linestyle = '-', lw = 2)
 
     # # vergence approximation: ray orientation across surface
-    # approxLp = round(-1 * (uEmList[0] - uEmList[1]) / (yPosList[0] - yPosList[1]), 3)
+    # approxLp = round(-1 * (uEmList[0] - uEmList[1]) / (yPosList[0] - yPosList[1]), 2)
     # # print('The approximate emergent vergence is:', approxLp, 'D.')
 
     ax.set_frame_on(False)
@@ -458,9 +458,9 @@ def drawDevDisp(devThinDeg, prismDiopter, distances):
 
         # compute displacement for the current distance
         if devThinDeg != None:
-          disp = round(math.tan(devThinRad) * dist, 3)
+          disp = round(math.tan(devThinRad) * dist, 2)
         elif prismDiopter != None:
-          disp = round(prismDiopter * dist, 3) / -100
+          disp = round(prismDiopter * dist, 2) / -100
 
         # draw displacement
         ax.plot([dist, dist], [0, disp], color = cMapIndex(i),
@@ -479,7 +479,7 @@ def drawDevDisp(devThinDeg, prismDiopter, distances):
         ax.text(dist, disp, strCatDisp, color=cMapTheme(0),
                 ha='center', va='center', zorder=2, bbox=ctbox)
 
-        print('The displacement at', round(dist, 3), 'm is', disp, 'm.')
+        print('The displacement at', round(dist, 2), 'm is', disp, 'm.')
 
     ax.set_xlabel('Distance (m)')
     ax.set_ylabel('Displacement (m)')
@@ -713,7 +713,7 @@ def drawPinhole(h, hp, l, lp):
   ax.axis('off')
   plt.show()
 
-  return round(answer, 3)
+  return round(answer, 2)
 
 def drawPlaneInterface(n, l, np, lp, obsDist, emPos):
 
@@ -721,23 +721,23 @@ def drawPlaneInterface(n, l, np, lp, obsDist, emPos):
   answer = None # Initialize answer
   if n is None:
     n = (np * l) / lp
-    answer = round(n, 3)
+    answer = round(n, 2)
     print('The incident refractive index is', n, '.')
   elif l is None:
     l = (n * lp) / np
-    answer = round(l, 3)
+    answer = round(l, 2)
     print('The object distance is', l, 'm.')
   elif np is None:
     np = (n * lp) / l
-    answer = round(np, 3)
+    answer = round(np, 2)
     print('The emergent refractive index is', np, '.')
   elif lp is None:
-    lp = round((np * l) / n, 3)
+    lp = round((np * l) / n, 2)
     print('The image distance is', lp, 'm.')
     answer = lp
 
-  L = round(n/l, 3)
-  Lp = round(np/lp, 3)
+  L = round(n/l, 2)
+  Lp = round(np/lp, 2)
 
   # determine dynamic axis limits based on l and lp
   maxCoord = max(abs(l) if l is not None else 0, abs(lp) if lp is not None else 0, abs(obsDist), 0.5) # Ensure a minimum value for scaling
@@ -817,7 +817,7 @@ def drawPlaneInterface(n, l, np, lp, obsDist, emPos):
             edgecolor=cMapTheme(0))
   plt.show()
 
-  print('The image is located', round(abs(lp) + obsDist, 3), 'm from the observer.')
+  print('The image is located', round(abs(lp) + obsDist, 2), 'm from the observer.')
 
 def drawPrismCombo(prismA, typeA, prismB, typeB, eye):
 
@@ -1041,47 +1041,47 @@ def drawReflection(n, np, givens, givenVals, randBool, unknowns):
   # l
   if incSwitch == 0:
     if randBool == True:
-      l = round(npr.uniform(-1, 1), 3)
+      l = round(npr.uniform(-1, 1), 2)
     else:
       l = givenVals[0]
-    L = round(safeDivide(n, l), 3)
+    L = round(safeDivide(n, l), 2)
     print('The object distance is:', l, 'm.')
 
   # L
   if incSwitch == 1:
     if randBool == True:
-      L = round(npr.choice(llpVergList), 3)
+      L = round(npr.choice(llpVergList), 2)
     else:
       L = givenVals[0]
-    l = round(safeDivide(n, L), 3)
+    l = round(safeDivide(n, L), 2)
     print('The incident vergence is:', L, 'D.')
 
   # [ri, di]
   elif incSwitch == 2:
     if randBool == True:
-      ri = round(npr.uniform(-0.25, 1), 3)
-      Vi = round(safeDivide(n, ri), 3)
-      di = round(npr.uniform(-0.75, 0), 3)
+      ri = round(npr.uniform(-0.25, 1), 2)
+      Vi = round(safeDivide(n, ri), 2)
+      di = round(npr.uniform(-0.75, 0), 2)
     else:
       ri = givenVals[0][0]
       di = givenVals[0][1]
-      Vi = round(safeDivide(n, ri), 3)
+      Vi = round(safeDivide(n, ri), 2)
     l = di + ri
-    L = round(safeDivide(n, l), 3)
+    L = round(safeDivide(n, l), 2)
     print('An incident wavefront with a radius of', ri, 'm is located', di,
           'm left of the refractive interface.')
   # [Vi, di]
   elif incSwitch == 3:
     if randBool == True:
-      Vi = round(npr.choice(iVergList), 3)
-      ri = round(safeDivide(n, Vi), 3)
-      di = round(npr.uniform(-0.75, 0), 3)
+      Vi = round(npr.choice(iVergList), 2)
+      ri = round(safeDivide(n, Vi), 2)
+      di = round(npr.uniform(-0.75, 0), 2)
     else:
       Vi = givenVals[0][0]
       di = givenVals[0][1]
-      ri = round(safeDivide(n, Vi), 3)
+      ri = round(safeDivide(n, Vi), 2)
     l = di + ri
-    L = round(safeDivide(n, l), 3)
+    L = round(safeDivide(n, l), 2)
     print('An incident wavefront with a vergence of', Vi, 'D is located', di,
         'm left of the refractive interface.')
 
@@ -1089,89 +1089,89 @@ def drawReflection(n, np, givens, givenVals, randBool, unknowns):
   # F
   if powSwitch == 0:
     if randBool == True:
-      F = round(npr.choice(llpVergList), 3)
+      F = round(npr.choice(llpVergList), 2)
     else:
       F = givenVals[1]
-    f = round(safeDivide(-n, F), 3)
-    fp = round(safeDivide(np, F), 3)
+    f = round(safeDivide(-n, F), 2)
+    fp = round(safeDivide(np, F), 2)
     print('The power of the refractive interface is', F, 'D.')
 
   if powSwitch == 1:
     if randBool == True:
-      F = round(npr.choice(llpVergList), 3)
-      f = round(safeDivide(-n, F), 3)
+      F = round(npr.choice(llpVergList), 2)
+      f = round(safeDivide(-n, F), 2)
     else:
       f = givenVals[1]
-      F = round(safeDivide(-n, f), 3)
-    fp = round(safeDivide(np, F), 3)
+      F = round(safeDivide(-n, f), 2)
+    fp = round(safeDivide(np, F), 2)
     print('The primary focal length is', f, 'm.')
 
   if powSwitch == 2:
     if randBool == True:
-      F = round(npr.choice(llpVergList), 3)
-      fp = round(safeDivide(np, F), 3)
+      F = round(npr.choice(llpVergList), 2)
+      fp = round(safeDivide(np, F), 2)
     else:
       fp = givenVals[1]
-      F = round(safeDivide(np, fp), 3)
-    f = round(safeDivide(-n, F), 3)
+      F = round(safeDivide(np, fp), 2)
+    f = round(safeDivide(-n, F), 2)
     print('The secondary focal length is', fp, 'm.')
 
   if powSwitch == 3:
     if randBool == True:
-      F = round(npr.choice(llpVergList), 3)
-      r = round(safeDivide(np - n, F), 3)
+      F = round(npr.choice(llpVergList), 2)
+      r = round(safeDivide(np - n, F), 2)
     else:
       r = givenVals[1]
-      F = round(safeDivide(np - n, r), 3)
-    f = round(safeDivide(-n, F), 3)
-    fp = round(safeDivide(np, F), 3)
+      F = round(safeDivide(np - n, r), 2)
+    f = round(safeDivide(-n, F), 2)
+    fp = round(safeDivide(np, F), 2)
     print('The radius of curvature is', r, 'm.')
 
   # givens for emergent light
   # lp
   if emSwitch == 0:
     if randBool == True:
-      lp = round(npr.uniform(-1, 1), 3)
+      lp = round(npr.uniform(-1, 1), 2)
     else:
       lp = givenVals[2]
-    Lp = round(safeDivide(np, lp), 3)
+    Lp = round(safeDivide(np, lp), 2)
     print('The image distance is:', lp, 'm.')
 
   # Lp
   elif emSwitch == 1:
     if randBool == True:
-      Lp = round(npr.choice(llpVergList), 3)
+      Lp = round(npr.choice(llpVergList), 2)
     else:
       Lp = givenVals[2]
-    lp = round(safeDivide(np, Lp), 3)
+    lp = round(safeDivide(np, Lp), 2)
     print('The emergent vergence is:', Lp, 'D.')
 
   # [re, de]
   elif emSwitch == 2:
     if randBool == True:
-      re = round(npr.uniform(-1, 0.25), 3)
-      Ve = round(safeDivide(np, re), 3)
-      de = round(npr.uniform(0, 0.75), 3)
+      re = round(npr.uniform(-1, 0.25), 2)
+      Ve = round(safeDivide(np, re), 2)
+      de = round(npr.uniform(0, 0.75), 2)
     else:
       re = givenVals[2][0]
       de = givenVals[2][1]
-      Ve = round(safeDivide(np, re), 3)
+      Ve = round(safeDivide(np, re), 2)
     lp = de + re
-    Lp = round(safeDivide(np, lp), 3)
+    Lp = round(safeDivide(np, lp), 2)
     print('An emergent wavefront with a radius of', re, 'm is located', de,
           'm right of the refractive interface.')
   # [Ve, de]
   elif emSwitch == 3:
     if randBool == True:
-      Ve = round(npr.choice(eVergList), 3)
-      re = round(safeDivide(n, Ve), 3)
-      de = round(npr.uniform(0, 0.75), 3)
+      Ve = round(npr.choice(eVergList), 2)
+      re = round(safeDivide(n, Ve), 2)
+      de = round(npr.uniform(0, 0.75), 2)
     else:
       Ve = givenVals[2][0]
       de = givenVals[2][1]
-      re = round(safeDivide(np, Ve), 3)
+      re = round(safeDivide(np, Ve), 2)
     lp = de + re
-    Lp = round(safeDivide(np, lp), 3)
+    Lp = round(safeDivide(np, lp), 2)
     print('An emergent wavefront with a vergence of', Ve, 'D is located', de,
           'm right of the refractive interface.')
 
@@ -1188,35 +1188,35 @@ def drawReflection(n, np, givens, givenVals, randBool, unknowns):
   # l
   if incSwitch == 4:
     print('What is the object distance?')
-    L = round(Lp - F, 3)
-    l = round(safeDivide(n, L), 3)
+    L = round(Lp - F, 2)
+    l = round(safeDivide(n, L), 2)
     answer = l
   # L
   elif incSwitch == 5:
     print('What is the vergence incident at the refractive interface?')
-    L = round(Lp - F, 3)
-    l = round(safeDivide(n, L), 3)
+    L = round(Lp - F, 2)
+    l = round(safeDivide(n, L), 2)
     answer = L
 
   # [ri, di]
   elif incSwitch == 6:
-    di = round(npr.uniform(-0.75, 0), 3)
+    di = round(npr.uniform(-0.75, 0), 2)
     print('What is the radius of an incident wavefront located', di,
           'm left of the refractive interface?')
-    L = round(Lp - F, 3)
-    l = round(safeDivide(n, L), 3)
+    L = round(Lp - F, 2)
+    l = round(safeDivide(n, L), 2)
     ri = l - di
     answer = ri
 
   # [Vi, di]
   elif incSwitch == 7:
-    di = round(npr.uniform(-0.75, 0), 3)
+    di = round(npr.uniform(-0.75, 0), 2)
     print('What is the vergence of an incident wavefront located', di,
           'm left of the refractive interface?')
-    L = round(Lp - F, 3)
-    l = round(safeDivide(n, L), 3)
+    L = round(Lp - F, 2)
+    l = round(safeDivide(n, L), 2)
     ri = l - di
-    Vi = round(safeDivide(n, ri), 3)
+    Vi = round(safeDivide(n, ri), 2)
     answer = Vi
 
   #> unknowns for power
@@ -1224,10 +1224,10 @@ def drawReflection(n, np, givens, givenVals, randBool, unknowns):
   # assume l/L and lp/LP are defined
   # F / f / fp
   if powSwitch >= 4:
-    F = round(Lp - L, 3)
-    f = round(safeDivide(-n, F), 3)
-    fp = round(safeDivide(np, F), 3)
-    r = round(safeDivide(np - n, F), 3)
+    F = round(Lp - L, 2)
+    f = round(safeDivide(-n, F), 2)
+    fp = round(safeDivide(np, F), 2)
+    r = round(safeDivide(np - n, F), 2)
 
   if powSwitch == 4:
     print('What is the power of the refractive interface?')
@@ -1251,38 +1251,38 @@ def drawReflection(n, np, givens, givenVals, randBool, unknowns):
   # lp
   if emSwitch == 4:
     print('What is the image distance?')
-    Lp = round(L + F, 3)
-    lp = round(safeDivide(np, Lp), 3)
+    Lp = round(L + F, 2)
+    lp = round(safeDivide(np, Lp), 2)
     answer = lp
   # Lp
   elif emSwitch == 5:
     print('What is the vergence emergent from the refractive interface?')
-    Lp = round(L + F, 3)
-    lp = round(safeDivide(np, Lp), 3)
+    Lp = round(L + F, 2)
+    lp = round(safeDivide(np, Lp), 2)
     answer = Lp
   # re
   elif emSwitch == 6:
-    de = round(npr.uniform(0, 0.75), 3)
+    de = round(npr.uniform(0, 0.75), 2)
     print('What is the radius of an emergent wavefront located', de,
           'm right of the refractive interface?')
-    Lp = round(L +  F, 3)
-    lp = round(safeDivide(np, Lp), 3)
+    Lp = round(L +  F, 2)
+    lp = round(safeDivide(np, Lp), 2)
     re = lp - de
     answer = re
   # Ve
   elif emSwitch == 7:
-    de = round(npr.uniform(0, 0.75), 3)
+    de = round(npr.uniform(0, 0.75), 2)
     print('What is the vergence of an emergent wavefront located', de,
           'm right of the refractive interface?')
-    Lp = round(L + F, 3)
-    lp = round(safeDivide(np, Lp), 3)
+    Lp = round(L + F, 2)
+    lp = round(safeDivide(np, Lp), 2)
     re = lp - de
-    Ve = round(safeDivide(np, re), 3)
+    Ve = round(safeDivide(np, re), 2)
     answer = Ve
 
-  # r = round((np - n) / F, 3)
+  # r = round((np - n) / F, 2)
   # print('The radius of the surface is', r, 'm.')
-  LM = round(safeDivide(L, Lp), 3)
+  LM = round(safeDivide(L, Lp), 2)
   # print('The lateral magnification is', LM, '.')
 
   #> draw object
@@ -1405,7 +1405,7 @@ def drawReflection(n, np, givens, givenVals, randBool, unknowns):
   ax.axis('off')
   plt.show()
 
-  return round(answer, 3)
+  return round(answer, 2)
 
 def drawRefraction(n, np, givens, givenVals, randBool, unknowns):
 
@@ -1457,47 +1457,47 @@ def drawRefraction(n, np, givens, givenVals, randBool, unknowns):
   # l
   if incSwitch == 0:
     if randBool == True:
-      l = round(npr.uniform(-1, 1), 3)
+      l = round(npr.uniform(-1, 1), 2)
     else:
       l = givenVals[0]
-    L = round(safeDivide(n, l), 3)
+    L = round(safeDivide(n, l), 2)
     print('The object distance is:', l, 'm.')
 
   # L
   if incSwitch == 1:
     if randBool == True:
-      L = round(npr.choice(llpVergList), 3)
+      L = round(npr.choice(llpVergList), 2)
     else:
       L = givenVals[0]
-    l = round(safeDivide(n, L), 3)
+    l = round(safeDivide(n, L), 2)
     print('The incident vergence is:', L, 'D.')
 
   # [ri, di]
   elif incSwitch == 2:
     if randBool == True:
-      ri = round(npr.uniform(-0.25, 1), 3)
-      Vi = round(safeDivide(n, ri), 3)
-      di = round(npr.uniform(-0.75, 0), 3)
+      ri = round(npr.uniform(-0.25, 1), 2)
+      Vi = round(safeDivide(n, ri), 2)
+      di = round(npr.uniform(-0.75, 0), 2)
     else:
       ri = givenVals[0][0]
       di = givenVals[0][1]
-      Vi = round(safeDivide(n, ri), 3)
+      Vi = round(safeDivide(n, ri), 2)
     l = di + ri
-    L = round(safeDivide(n, l), 3)
+    L = round(safeDivide(n, l), 2)
     print('An incident wavefront with a radius of', ri, 'm is located', di,
           'm left of the refractive interface.')
   # [Vi, di]
   elif incSwitch == 3:
     if randBool == True:
-      Vi = round(npr.choice(iVergList), 3)
-      ri = round(safeDivide(n, Vi), 3)
-      di = round(npr.uniform(-0.75, 0), 3)
+      Vi = round(npr.choice(iVergList), 2)
+      ri = round(safeDivide(n, Vi), 2)
+      di = round(npr.uniform(-0.75, 0), 2)
     else:
       Vi = givenVals[0][0]
       di = givenVals[0][1]
-      ri = round(safeDivide(n, Vi), 3)
+      ri = round(safeDivide(n, Vi), 2)
     l = di + ri
-    L = round(safeDivide(n, l), 3)
+    L = round(safeDivide(n, l), 2)
     print('An incident wavefront with a vergence of', Vi, 'D is located', di,
         'm left of the refractive interface.')
 
@@ -1505,89 +1505,89 @@ def drawRefraction(n, np, givens, givenVals, randBool, unknowns):
   # F
   if powSwitch == 0:
     if randBool == True:
-      F = round(npr.choice(llpVergList), 3)
+      F = round(npr.choice(llpVergList), 2)
     else:
       F = givenVals[1]
-    f = round(safeDivide(-n, F), 3)
-    fp = round(safeDivide(np, F), 3)
+    f = round(safeDivide(-n, F), 2)
+    fp = round(safeDivide(np, F), 2)
     print('The power of the refractive interface is', F, 'D.')
 
   if powSwitch == 1:
     if randBool == True:
-      F = round(npr.choice(llpVergList), 3)
-      f = round(safeDivide(-n, F), 3)
+      F = round(npr.choice(llpVergList), 2)
+      f = round(safeDivide(-n, F), 2)
     else:
       f = givenVals[1]
-      F = round(safeDivide(-n, f), 3)
-    fp = round(safeDivide(np, F), 3)
+      F = round(safeDivide(-n, f), 2)
+    fp = round(safeDivide(np, F), 2)
     print('The primary focal length is', f, 'm.')
 
   if powSwitch == 2:
     if randBool == True:
-      F = round(npr.choice(llpVergList), 3)
-      fp = round(safeDivide(np, F), 3)
+      F = round(npr.choice(llpVergList), 2)
+      fp = round(safeDivide(np, F), 2)
     else:
       fp = givenVals[1]
-      F = round(safeDivide(np, fp), 3)
-    f = round(safeDivide(-n, F), 3)
+      F = round(safeDivide(np, fp), 2)
+    f = round(safeDivide(-n, F), 2)
     print('The secondary focal length is', fp, 'm.')
 
   if powSwitch == 3:
     if randBool == True:
-      F = round(npr.choice(llpVergList), 3)
-      r = round(safeDivide(np - n, F), 3)
+      F = round(npr.choice(llpVergList), 2)
+      r = round(safeDivide(np - n, F), 2)
     else:
       r = givenVals[1]
-      F = round(safeDivide(np - n, r), 3)
-    f = round(safeDivide(-n, F), 3)
-    fp = round(safeDivide(np, F), 3)
+      F = round(safeDivide(np - n, r), 2)
+    f = round(safeDivide(-n, F), 2)
+    fp = round(safeDivide(np, F), 2)
     print('The radius of curvature is', r, 'm.')
 
   # givens for emergent light
   # lp
   if emSwitch == 0:
     if randBool == True:
-      lp = round(npr.uniform(-1, 1), 3)
+      lp = round(npr.uniform(-1, 1), 2)
     else:
       lp = givenVals[2]
-    Lp = round(safeDivide(np, lp), 3)
+    Lp = round(safeDivide(np, lp), 2)
     print('The image distance is:', lp, 'm.')
 
   # Lp
   elif emSwitch == 1:
     if randBool == True:
-      Lp = round(npr.choice(llpVergList), 3)
+      Lp = round(npr.choice(llpVergList), 2)
     else:
       Lp = givenVals[2]
-    lp = round(safeDivide(np, Lp), 3)
+    lp = round(safeDivide(np, Lp), 2)
     print('The emergent vergence is:', Lp, 'D.')
 
   # [re, de]
   elif emSwitch == 2:
     if randBool == True:
-      re = round(npr.uniform(-1, 0.25), 3)
-      Ve = round(safeDivide(np, re), 3)
-      de = round(npr.uniform(0, 0.75), 3)
+      re = round(npr.uniform(-1, 0.25), 2)
+      Ve = round(safeDivide(np, re), 2)
+      de = round(npr.uniform(0, 0.75), 2)
     else:
       re = givenVals[2][0]
       de = givenVals[2][1]
-      Ve = round(safeDivide(np, re), 3)
+      Ve = round(safeDivide(np, re), 2)
     lp = de + re
-    Lp = round(safeDivide(np, lp), 3)
+    Lp = round(safeDivide(np, lp), 2)
     print('An emergent wavefront with a radius of', re, 'm is located', de,
           'm right of the refractive interface.')
   # [Ve, de]
   elif emSwitch == 3:
     if randBool == True:
-      Ve = round(npr.choice(eVergList), 3)
-      re = round(safeDivide(n, Ve), 3)
-      de = round(npr.uniform(0, 0.75), 3)
+      Ve = round(npr.choice(eVergList), 2)
+      re = round(safeDivide(n, Ve), 2)
+      de = round(npr.uniform(0, 0.75), 2)
     else:
       Ve = givenVals[2][0]
       de = givenVals[2][1]
-      re = round(safeDivide(np, Ve), 3)
+      re = round(safeDivide(np, Ve), 2)
     lp = de + re
-    Lp = round(safeDivide(np, lp), 3)
+    Lp = round(safeDivide(np, lp), 2)
     print('An emergent wavefront with a vergence of', Ve, 'D is located', de,
           'm right of the refractive interface.')
 
@@ -1604,35 +1604,35 @@ def drawRefraction(n, np, givens, givenVals, randBool, unknowns):
   # l
   if incSwitch == 4:
     print('What is the object distance?')
-    L = round(Lp - F, 3)
-    l = round(safeDivide(n, L), 3)
+    L = round(Lp - F, 2)
+    l = round(safeDivide(n, L), 2)
     answer = l
   # L
   elif incSwitch == 5:
     print('What is the vergence incident at the refractive interface?')
-    L = round(Lp - F, 3)
-    l = round(safeDivide(n, L), 3)
+    L = round(Lp - F, 2)
+    l = round(safeDivide(n, L), 2)
     answer = L
 
   # [ri, di]
   elif incSwitch == 6:
-    di = round(npr.uniform(-0.75, 0), 3)
+    di = round(npr.uniform(-0.75, 0), 2)
     print('What is the radius of an incident wavefront located', di,
           'm left of the refractive interface?')
-    L = round(Lp - F, 3)
-    l = round(safeDivide(n, L), 3)
+    L = round(Lp - F, 2)
+    l = round(safeDivide(n, L), 2)
     ri = l - di
     answer = ri
 
   # [Vi, di]
   elif incSwitch == 7:
-    di = round(npr.uniform(-0.75, 0), 3)
+    di = round(npr.uniform(-0.75, 0), 2)
     print('What is the vergence of an incident wavefront located', di,
           'm left of the refractive interface?')
-    L = round(Lp - F, 3)
-    l = round(safeDivide(n, L), 3)
+    L = round(Lp - F, 2)
+    l = round(safeDivide(n, L), 2)
     ri = l - di
-    Vi = round(safeDivide(n, ri), 3)
+    Vi = round(safeDivide(n, ri), 2)
     answer = Vi
 
   #> unknowns for power
@@ -1640,10 +1640,10 @@ def drawRefraction(n, np, givens, givenVals, randBool, unknowns):
   # assume l/L and lp/LP are defined
   # F / f / fp
   if powSwitch >= 4:
-    F = round(Lp - L, 3)
-    f = round(safeDivide(-n, F), 3)
-    fp = round(safeDivide(np, F), 3)
-    r = round(safeDivide(np - n, F), 3)
+    F = round(Lp - L, 2)
+    f = round(safeDivide(-n, F), 2)
+    fp = round(safeDivide(np, F), 2)
+    r = round(safeDivide(np - n, F), 2)
 
   if powSwitch == 4:
     print('What is the power of the refractive interface?')
@@ -1667,38 +1667,38 @@ def drawRefraction(n, np, givens, givenVals, randBool, unknowns):
   # lp
   if emSwitch == 4:
     print('What is the image distance?')
-    Lp = round(L + F, 3)
-    lp = round(safeDivide(np, Lp), 3)
+    Lp = round(L + F, 2)
+    lp = round(safeDivide(np, Lp), 2)
     answer = lp
   # Lp
   elif emSwitch == 5:
     print('What is the vergence emergent from the refractive interface?')
-    Lp = round(L + F, 3)
-    lp = round(safeDivide(np, Lp), 3)
+    Lp = round(L + F, 2)
+    lp = round(safeDivide(np, Lp), 2)
     answer = Lp
   # re
   elif emSwitch == 6:
-    de = round(npr.uniform(0, 0.75), 3)
+    de = round(npr.uniform(0, 0.75), 2)
     print('What is the radius of an emergent wavefront located', de,
           'm right of the refractive interface?')
-    Lp = round(L +  F, 3)
-    lp = round(safeDivide(np, Lp), 3)
+    Lp = round(L +  F, 2)
+    lp = round(safeDivide(np, Lp), 2)
     re = lp - de
     answer = re
   # Ve
   elif emSwitch == 7:
-    de = round(npr.uniform(0, 0.75), 3)
+    de = round(npr.uniform(0, 0.75), 2)
     print('What is the vergence of an emergent wavefront located', de,
           'm right of the refractive interface?')
-    Lp = round(L + F, 3)
-    lp = round(safeDivide(np, Lp), 3)
+    Lp = round(L + F, 2)
+    lp = round(safeDivide(np, Lp), 2)
     re = lp - de
-    Ve = round(safeDivide(np, re), 3)
+    Ve = round(safeDivide(np, re), 2)
     answer = Ve
 
-  # r = round((np - n) / F, 3)
+  # r = round((np - n) / F, 2)
   # print('The radius of the surface is', r, 'm.')
-  LM = round(safeDivide(L, Lp), 3)
+  LM = round(safeDivide(L, Lp), 2)
   # print('The lateral magnification is', LM, '.')
 
   #> draw object
@@ -1821,7 +1821,7 @@ def drawRefraction(n, np, givens, givenVals, randBool, unknowns):
   ax.axis('off')
   plt.show()
 
-  return round(answer, 3)
+  return round(answer, 2)
 
 def drawShadow(h1, h2, d1, d2):
   #> inputs
@@ -1914,7 +1914,7 @@ def drawShadow(h1, h2, d1, d2):
   ax.axis('off')
   plt.show()
 
-  return round(answer, 3)
+  return round(answer, 2)
 
 def drawSnellInterface(theta, n, np):
   # Convert angle to radians
@@ -2039,7 +2039,7 @@ def drawSphSection(r, chordLength, showConcave):
 
     ySecMax = chordLength / 2
     xPlane = numpy.sqrt(r**2 - ySecMax**2)
-    s = round(r - xPlane, 3) # compute sagittal depth
+    s = round(r - xPlane, 2) # compute sagittal depth
     print('The sagittal depth is', s, 'mm.')
 
     # create three dimensional plot
@@ -2313,7 +2313,7 @@ def drawWave(v, lam, f):
   # `interval` is the delay between frames in milliseconds
   ani = FuncAnimation(fig, update, frames=200, interval=50, blit=True)
   plt.close()
-  return round(answer, 3), ani
+  return round(answer, 2), ani
 
 
 def drawWavefronts(n, p, radii, showRad, showVerg, showRays):
@@ -2447,7 +2447,7 @@ def makeIncEm(n, l, lp):
   elif l > 0: # virtual object
     rListInc = numpy.linspace(l - incLim, l, 101)
   vListInc = n/rListInc
-  L = round(vListInc[-1], 3)
+  L = round(vListInc[-1], 2)
   print('The vergence incident on the lens is:', L, 'D.')
 
   xList1 = [distListInc, "$W_I$ Distance from Lens (m)"]
@@ -2461,7 +2461,7 @@ def makeIncEm(n, l, lp):
   distListEm = numpy.linspace(0, emLim, 101)
   rListEm = numpy.linspace(lp, lp - emLim, 101)
   vListEm = n/rListEm
-  Lp = round(vListEm[0], 3)
+  Lp = round(vListEm[0], 2)
   print('The vergence emergent from the lens is:', Lp, 'D.')
 
   xList2 = [distListEm, "$W_E$ Distance from Lens (m)"]
@@ -2469,7 +2469,7 @@ def makeIncEm(n, l, lp):
   yListB2 = [vListEm, "$V_E$"]
 
   #> POWER
-  F = round(Lp - L, 3)
+  F = round(Lp - L, 2)
   print('The power of the lens is:', F, 'D.')
 
   fig, axs = plt.subplots(1, 2, layout = 'constrained', figsize = (6, 4))
@@ -2486,8 +2486,8 @@ def makeIncEm(n, l, lp):
   axs[0].set_ylabel(yListA1[1], color = cMapTheme(3))
   axs[0].set_xlabel(xList1[1])
   axs[0].set_xticks([xList1[0][0], xList1[0][50], xList1[0][-1]])
-  axs[0].set_xticklabels([str(round(xList1[0][0], 3)),
-                          str(round(xList1[0][50], 3)), 'Lens'], rotation=45)
+  axs[0].set_xticklabels([str(round(xList1[0][0], 2)),
+                          str(round(xList1[0][50], 2)), 'Lens'], rotation=45)
   axs[0].set_frame_on(False)
 
   if (xList1[0][0] > xList1[0][-1]) and (l > 0):
@@ -2504,8 +2504,8 @@ def makeIncEm(n, l, lp):
   axs[1].set_ylabel(yListA2[1], color = cMapTheme(3))
   axs[1].set_xlabel(xList2[1])
   axs[1].set_xticks([xList2[0][0], xList2[0][50], xList2[0][-1]])
-  axs[1].set_xticklabels(['Lens', str(round(xList2[0][50], 3)),
-                          str(round(xList2[0][-1], 3))], rotation=45)
+  axs[1].set_xticklabels(['Lens', str(round(xList2[0][50], 2)),
+                          str(round(xList2[0][-1], 2))], rotation=45)
   axs[1].set_frame_on(False)
 
   if xList2[0][0] > xList2[0][-1]:
