@@ -991,6 +991,165 @@ def drawPrismCombo(prismA, typeA, prismB, typeB, eye):
 
     print(f"Polar: {rMag:.2f} ∆ @ {rDirDeg:.2f}°")
 
+def drawPrismPrentice():
+
+    # draws and computes prism parameters for one eye
+    def drawEyeWithLens(ax, eyeH, eyeV, lensH, lensV, F, eyeLabel):
+        baseLength = 5
+        lensHeight = 5
+
+        # Determine lens type based on F
+        isPlusLens = F > 0
+        isMinusLens = F < 0
+
+        # PLUS
+        if isPlusLens:
+            lensColor = 'lightseagreen'
+
+            # HORIZONAL PLUS LENS
+            ax.fill([lensH, lensH, lensH - baseLength/2], [lensV + lensHeight/2, lensV - lensHeight/2, lensV], lensColor, alpha=0.3, edgecolor=lensColor, linewidth=1)
+            ax.fill([lensH, lensH, lensH + baseLength/2], [lensV + lensHeight/2, lensV - lensHeight/2, lensV], lensColor, alpha=0.3, edgecolor=lensColor, linewidth=1)
+            # VERTICAL PLUS LENS
+            ax.fill([lensH - baseLength/2, lensH + baseLength/2, lensH], [lensV, lensV, lensV + lensHeight/2], lensColor, alpha=0.3, edgecolor=lensColor, linewidth=1)
+            ax.fill([lensH - baseLength/2, lensH + baseLength/2, lensH], [lensV, lensV, lensV - lensHeight/2], lensColor, alpha=0.3, edgecolor=lensColor, linewidth=1)
+
+        # MINUS
+        elif isMinusLens:
+            lensColor = 'lightsalmon'
+
+            # HORIZONTAL MINUS LENS
+            ax.fill([lensH - baseLength/2, lensH - baseLength/2, lensH], [lensV + lensHeight/2, lensV - lensHeight/2, lensV], lensColor, alpha=0.3, edgecolor=lensColor, linewidth=1)
+            ax.fill([lensH + baseLength/2, lensH + baseLength/2, lensH], [lensV + lensHeight/2, lensV - lensHeight/2, lensV], lensColor, alpha=0.3, edgecolor=lensColor, linewidth=1)
+            # VERTICAL MINUS LENS
+            ax.fill([lensH - baseLength/2, lensH + baseLength/2, lensH], [lensV + lensHeight/2, lensV + lensHeight/2, lensV], lensColor, alpha=0.3, edgecolor=lensColor, linewidth=1)
+            ax.fill([lensH - baseLength/2, lensH + baseLength/2, lensH], [lensV - lensHeight/2, lensV - lensHeight/2, lensV], lensColor, alpha=0.3, edgecolor=lensColor, linewidth=1)
+
+        # OBSERVER'S EYE
+        eyeCircle = plt.Circle((eyeH, eyeV), radius=0.5, color='peru', alpha=0.8, edgecolor='peru', linewidth=1.5)
+        ax.add_patch(eyeCircle)
+        ax.plot(eyeH, eyeV, 'o', color='black', markersize=5) # Pupil
+
+        # COMPUTE DECENTRATION
+        dH = lensH - eyeH
+        dV = lensV - eyeV
+
+        pH = dH * F
+        pV = dV * F
+        pMag = numpy.sqrt(pH**2 + pV**2)
+        pDirRad = numpy.arctan2(pV, pH)
+        pDirDeg = numpy.degrees(pDirRad)
+        pDirDeg = (pDirDeg + 360) % 360
+
+        return {'pH': pH, 'pV': pV, 'pMag': pMag, 'pDir': pDirDeg}
+
+    def drawPrentice(FOD, FOS, yokedHOffset, yokedVOffset, odLensHPos, odLensVPos, osLensHPos, osLensVPos, ipd):
+        # Apply yoked horizontal offset
+        odHPos = yokedHOffset
+        osHPos = -yokedHOffset # Symmetrical movement for OS
+
+        # Apply yoked vertical offset
+        odVPos = yokedVOffset
+        osVPos = yokedVOffset # Symmetrical movement for OS
+
+        # Clear previous output in the display area to avoid stacking plots
+        clear_output(wait=True)
+
+        fig, ax = plt.subplots(figsize=(6, 6)) # Wider for two eyes
+        ax.set_xlim(-ipd/2 - 5, ipd/2 + 5) # Adjust limits dynamically based on IPD
+        ax.set_ylim(-6, 6)
+        ax.set_aspect('equal')
+        ax.grid(True, linestyle='--', alpha=0.6)
+        ax.set_xlabel("Horizontal Position (cm)", fontsize=12)
+        ax.set_ylabel("Vertical Position (cm)", fontsize=12)
+
+        # Draw for Right Eye (OD - patient's right, your left)
+        # Eye position relative to plot origin: -ipd/2 is the center of the right eye's field
+        odHPlotPos = -ipd/2 + odHPos
+        odLensHPlotPos = -ipd/2 + odLensHPos
+        odPrism = drawEyeWithLens(ax, odHPlotPos, odVPos, odLensHPlotPos, odLensVPos, FOD, 'OD')
+
+        # Draw for Left Eye (OS - patient's left, your right)
+        # Eye position relative to plot origin: ipd/2 is the center of the left eye's field
+        osHPlotPos = ipd/2 + osHPos
+        osLensHPlotPos = ipd/2 + osLensHPos
+        osPrism = drawEyeWithLens(ax, osHPlotPos, osVPos, osLensHPlotPos, osLensVPos, FOS, 'OS')
+
+        # Add a line to indicate the nose/center between eyes
+        ax.axvline(0, color='darkgray', linestyle='--', linewidth=0.8, label='Nasal Bridge')
+
+        fig.canvas.draw_idle()
+        plt.show()
+
+        # Report prism values as text output
+        print(f"  OD H Prism: {odPrism['pH']:.2f} Δ")
+        print(f"  OD V Prism: {odPrism['pV']:.2f} Δ")
+        print(f"  OD Prism Mag: {odPrism['pMag']:.2f} Δ")
+        print(f"  OD Prism Dir: {odPrism['pDir']:.2f} °\n")
+
+        print(f"  OS H Prism: {osPrism['pH']:.2f} Δ")
+        print(f"  OS V Prism: {osPrism['pV']:.2f} Δ")
+        print(f"  OS Prism Mag: {osPrism['pMag']:.2f} Δ")
+        print(f"  OS Prism Dir: {osPrism['pDir']:.2f} °\n")
+
+    # RIGHT EYE PARAMETER SLIDERS
+    FOD_slider = FloatSlider(min=-10, max=10, step=0.25, value=0, description='F (D):', layout=Layout(width='auto'))
+    odLensHPos_slider = FloatSlider(min=-2, max=2, step=0.1, value=0, description='ΔLensH (cm):', layout=Layout(width='auto'))
+    odLensVPos_slider = FloatSlider(min=-2, max=2, step=0.1, value=0, description='ΔLensV (cm):', layout=Layout(width='auto'))
+
+    # LEFT EYE PARAMETER SLIDERS
+    FOS_slider = FloatSlider(min=-10, max=10, step=0.25, value=0, description='F (D):', layout=Layout(width='auto'))
+    osLensHPos_slider = FloatSlider(min=-2, max=2, step=0.1, value=0, description='ΔLensH (cm):', layout=Layout(width='auto'))
+    osLensVPos_slider = FloatSlider(min=-2, max=2, step=0.1, value=0, description='ΔLensV (cm):', layout=Layout(width='auto'))
+
+    # COMMON PARAMETER SLIDERS
+    ipd_slider = FloatSlider(min=3, max=7, step=0.1, value=6.4, description='PD (cm):', layout=Layout(width='auto'))
+    yokedHOffset_slider = FloatSlider(min=-2, max=2, step=0.1, value=0, description='ΔEyeH (cm):', layout=Layout(width='auto'))
+    yokedVOffset_slider = FloatSlider(min=-2, max=2, step=0.1, value=0, description='ΔEyeV (cm):', layout=Layout(width='auto'))
+
+    # RIGHT EYE WIDGETS
+    od_widgets_group = VBox([
+        HTML('<h3 style="color: peru; text-align: center;">OD Parameters</h3>'),
+        FOD_slider,
+        odLensHPos_slider,
+        odLensVPos_slider
+    ], layout=Layout(border='3px solid black', background_color='#ffffff', padding='15px', margin='0 15px 0 0', width='20%'))
+
+    # LEFT EYE WIDGETS
+    os_widgets_group = VBox([
+        HTML('<h3 style="color: peru; text-align: center;">OS Parameters</h3>'),
+        FOS_slider,
+        osLensHPos_slider,
+        osLensVPos_slider
+    ], layout=Layout(border='3px solid black', background_color='#ffffff', padding='15px', margin='0 0 0 15px', width='20%'))
+
+    # COMMON PARAMETER WIDGETS
+    bottom_sliders_group = VBox([
+        HTML('<h3 style="color: peru; text-align: center;">Common Parameters</h3>'),
+        VBox([yokedHOffset_slider, yokedVOffset_slider, ipd_slider], layout=Layout(width='100%'))
+    ], layout=Layout(border='3px solid black', background_color = '#ffffff', padding='15px', margin='20px 0 0 0', width='42%'))
+
+
+    # ALL WIDGETS
+    ui = VBox([
+        HBox([od_widgets_group, os_widgets_group], layout=Layout(width='100%')),
+        bottom_sliders_group
+    ])
+
+    # Use interactive_output to link the drawPrentice function to the slider values
+    out = interactive_output(drawPrentice, {
+        'FOD': FOD_slider,
+        'FOS': FOS_slider,
+        'yokedHOffset': yokedHOffset_slider,
+        'yokedVOffset': yokedVOffset_slider,
+        'odLensHPos': odLensHPos_slider,
+        'odLensVPos': odLensVPos_slider,
+        'osLensHPos': osLensHPos_slider,
+        'osLensVPos': osLensVPos_slider,
+        'ipd': ipd_slider
+    })
+
+    return ui, out
+
 def drawReflection(n, np, givens, givenVals, randBool, unknowns):
 
   # givens
