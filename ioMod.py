@@ -3,7 +3,8 @@
 import cv2
 from google.colab.patches import cv2_imshow
 import ipywidgets as widgets
-from ipywidgets import interact, IntSlider, FloatSlider
+from ipywidgets import HBox, FloatSlider, HTML, interact, interactive_output, IntSlider, Label, Layout, RadioButtons, VBox
+from IPython.display import display, clear_output
 import math
 import matplotlib as mpl
 mpl.rcParams['font.family'] = 'DejaVu Sans'
