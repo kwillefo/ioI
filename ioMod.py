@@ -1110,24 +1110,20 @@ def drawPrismPrentice():
     # RIGHT EYE WIDGETS
     od_widgets_group = VBox([
         HTML('<h3 style="color: peru; text-align: center;">OD Parameters</h3>'),
-        FOD_slider,
-        odLensHPos_slider,
-        odLensVPos_slider
-    ], layout=Layout(border='3px solid black', background_color='#ffffff', padding='15px', margin='0 15px 0 0', width='20%'))
+        VBox([FOD_slider, odLensHPos_slider, odLensVPos_slider], layout = Layout(width = '100%'))],
+        layout=Layout(border='3px solid black', background_color='#ffffff', padding='15px', margin='20px 0 0 0', width='50%'))
 
     # LEFT EYE WIDGETS
     os_widgets_group = VBox([
         HTML('<h3 style="color: peru; text-align: center;">OS Parameters</h3>'),
-        FOS_slider,
-        osLensHPos_slider,
-        osLensVPos_slider
-    ], layout=Layout(border='3px solid black', background_color='#ffffff', padding='15px', margin='0 0 0 15px', width='20%'))
+        VBox([FOS_slider, osLensHPos_slider, osLensVPos_slider], layout = Layout(width = '100%'))],
+        layout=Layout(border='3px solid black', background_color='#ffffff', padding='15px', margin='20px 0 0 0', width='50%'))
 
     # COMMON PARAMETER WIDGETS
     bottom_sliders_group = VBox([
         HTML('<h3 style="color: peru; text-align: center;">Common Parameters</h3>'),
-        VBox([yokedHOffset_slider, yokedVOffset_slider, ipd_slider], layout=Layout(width='100%'))
-    ], layout=Layout(border='3px solid black', background_color = '#ffffff', padding='15px', margin='20px 0 0 0', width='42%'))
+        VBox([yokedHOffset_slider, yokedVOffset_slider, ipd_slider], layout=Layout(width='100%'))],
+        layout=Layout(border='3px solid black', background_color = '#ffffff', padding='15px', margin='20px 0 0 0', width='50%'))
 
 
     # ALL WIDGETS
