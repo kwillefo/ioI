@@ -1084,29 +1084,34 @@ def drawPrismPrentice():
         fig.canvas.draw_idle()
         plt.show()
 
+        odHAbs = abs(odPrism['pH'])
+        odVAbs = abs(odPrism['pV'])
+        osHAbs = abs(osPrism['pH'])
+        osVAbs = abs(osPrism['pV'])
+
         # Report prism values as text output
         if odPrism['pH'] > 0:
-            print(f"  OD H Prism: {odPrism['pH']:.2f} Δ BI")
+            print(f"  OD H Prism: {odHAbs:.2f} Δ BI")
         else:
-           print(f"  OD H Prism: {odPrism['pH']:.2f} Δ BO")
+           print(f"  OD H Prism: {odHAbs:.2f} Δ BO")
 
         if odPrism['pV'] > 0:
-            print(f"  OD V Prism: {odPrism['pV']:.2f} Δ BU")
+            print(f"  OD V Prism: {odVAbs:.2f} Δ BU")
         else:
-            print(f"  OD V Prism: {odPrism['pV']:.2f} Δ BD")
+            print(f"  OD V Prism: {odVAbs:.2f} Δ BD")
 
         print(f"  OD Prism Mag: {odPrism['pMag']:.2f} Δ")
         print(f"  OD Prism Dir: {odPrism['pDir']:.2f} °\n")
 
         if osPrism['pH'] > 0:
-            print(f"  OS H Prism: {osPrism['pH']:.2f} Δ BO")
+            print(f"  OS H Prism: {osHAbs:.2f} Δ BO")
         else:
-           print(f"  OS H Prism: {odPrism['pH']:.2f} Δ BI")
+           print(f"  OS H Prism: {osHAbs:.2f} Δ BI")
 
         if osPrism['pV'] > 0:
-            print(f"  OS V Prism: {osPrism['pV']:.2f} Δ BU")
+            print(f"  OS V Prism: {osVAbs:.2f} Δ BU")
         else:
-            print(f"  OS V Prism: {osPrism['pV']:.2f} Δ BD")
+            print(f"  OS V Prism: {osVAbs:.2f} Δ BD")
 
         print(f"  OS Prism Mag: {osPrism['pMag']:.2f} Δ")
         print(f"  OS Prism Dir: {osPrism['pDir']:.2f} °\n")
