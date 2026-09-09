@@ -1131,8 +1131,8 @@ def drawPrismPrentice():
 
 
     # ALL WIDGETS
-    ui = VBox([
-        HBox([od_widgets_group, os_widgets_group], layout=Layout(width='100%')),
+    ui = VBox([od_widgets_group, 
+        os_widgets_group,
         bottom_sliders_group
     ])
 
