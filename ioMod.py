@@ -1046,11 +1046,11 @@ def drawPrismPrentice():
     def drawPrentice(FOD, FOS, yokedHOffset, yokedVOffset, odLensHPos, odLensVPos, osLensHPos, osLensVPos, ipd):
         # Apply yoked horizontal offset
         odHPos = yokedHOffset
-        osHPos = -yokedHOffset # Symmetrical movement for OS
+        osHPos = yokedHOffset 
 
         # Apply yoked vertical offset
         odVPos = yokedVOffset
-        osVPos = yokedVOffset # Symmetrical movement for OS
+        osVPos = yokedVOffset 
 
         # Clear previous output in the display area to avoid stacking plots
         clear_output(wait=True)
