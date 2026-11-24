@@ -1030,9 +1030,6 @@ def drawPrismPrentice():
         ax.add_patch(eyeCircle)
         ax.plot(eyeH, eyeV, 'o', color='black', markersize=5) # Pupil
 
-        # NOSE
-        ax.axvline(0, color='darkgray', linestyle='--', linewidth=0.8, label='Nasal Bridge')
-
         # COMPUTE DECENTRATION
         dH = lensH - eyeH
         dV = lensV - eyeV
@@ -2286,6 +2283,120 @@ def drawSphSection(r, chordLength, showConcave):
 
     plt.show()
 
+import matplotlib.pyplot as plt
+import numpy as np
+
+def drawThickLens(F1, F2, t, n1, n2, n3, A1P, A2Pp, f, fp, fv, fvp, l, lp):
+
+    # define arbitrary reference point, A1, from which all other plotting will be referenced
+    A1 = 0.0
+    A2 = t
+
+    # location of principal points
+    P = A1 + A1P
+    Pp = A2 + A2Pp
+
+    # location of focal points
+    F = P + f
+    Fp = Pp + fp
+
+    # location of object (O) and image (I) points
+    # l is measured from P to O -> O = P + l
+    # lp (l') is measured from Pp to I -> I = Pp + lp
+    O = P + l
+    I = Pp + lp
+
+    # Set up the plot
+    fig, ax = plt.subplots(figsize=(12, 9))
+
+    # set vertical extent of lens and plot
+    lens_height = 2.0
+    y_limit = 4.2
+
+    # Draw optical axis
+    ax.axhline(0, color='black', linestyle='--', linewidth=1, label='Optical Axis')
+
+    #>> THICK LENS
+    y = np.array([-lens_height, lens_height])
+    x1 = np.array([A1, A1])
+    x2 = np.array([A2, A2])
+
+    ax.plot(x1, y, color='blue', linewidth=2)
+    ax.plot(x2, y, color='blue', linewidth=2)
+    ax.fill_betweenx(y, x1, x2, color='lightblue', alpha=0.3)
+
+    ax.plot([A1, A2], [0, 0], 'ko', markersize=6)
+    ax.text(A1, -0.2, 'A1', fontsize=12, ha='center', fontweight='bold', color='black')
+    ax.text(A2, -0.2, 'A2', fontsize=12, ha='center', fontweight='bold', color='black')
+
+    # PRINCIPAL PLANES AND POINTS
+    ax.axvline(P, color='green', linestyle=':', linewidth=2)
+    ax.plot(P, 0, 'ko', markersize=8)
+    ax.text(P, 0.2, 'P', color='black', fontsize=12, ha='center', fontweight='bold')
+
+    ax.axvline(Pp, color='darkgreen', linestyle=':', linewidth=2)
+    ax.plot(Pp, 0, 'ko', markersize=8)
+    ax.text(Pp, 0.2, "P'", color='black', fontsize=12, ha='center', fontweight='bold')
+
+    # FOCAL POINTS
+    ax.plot([F, Fp], [0, 0], 'ko', markersize=8)
+    ax.text(F, 0.2, 'F', color='black', fontsize=12, ha='center', fontweight='bold')
+    ax.text(Fp, 0.2, "F'", color='black', fontsize=12, ha='center', fontweight='bold')
+
+    # OBJECT & IMAGE POINTS
+    ax.plot([O, I], [0, 0], 'ko', markersize=8)
+    ax.text(O, 0.2, 'O', color='black', fontsize=12, ha='center', fontweight='bold')
+    ax.text(I, 0.2, 'I', color='black', fontsize=12, ha='center', fontweight='bold')
+
+    # Tracings
+    def draw_dim_line(x_start, x_end, y_level, label, color):
+        ax.annotate('', xy=(x_end, y_level), xytext=(x_start, y_level),
+                    arrowprops=dict(arrowstyle='->', color=color, lw=1.5))
+        ax.text((x_start + x_end) / 2, y_level + 0.1, label, color=color, 
+                fontsize=11, ha='center', fontweight='bold')
+
+    # fv: front focal length (measured from A1 to F)
+    draw_dim_line(A1, F, -1.2, f'fv = {fv:.3f}', 'blue')
+
+    # fvp: back focal length (measured from A2 to Fp)
+    draw_dim_line(A2, Fp, -1.8, f"f'v = {fvp:.3f}", 'blue')
+
+    # f: primary focal length (measured from P to F)
+    draw_dim_line(P, F, 1.2, f'f = {f:.3f}', 'green')
+
+    # fp: secondary focal length (measured from Pp to Fp)
+    draw_dim_line(Pp, Fp, 1.8, f"f' = {fp:.3f}", 'green')
+
+    # A1P: distance from A1 to P
+    draw_dim_line(A1, P, -2.4, f'A1P = {A1P:.3f}', 'grey')
+
+    # A2Pp: distance from A2 to P'
+    draw_dim_line(A2, Pp, -3.0, f"A2P' = {A2Pp:.3f}", 'grey')
+
+    # l: object distance (measured from P to O) - Drawn in burnt orange
+    draw_dim_line(P, O, 2.4, f'l = {l:.3f}', '#CC5500')
+
+    # lp: image distance (measured from Pp to I) - Drawn in burnt orange
+    draw_dim_line(Pp, I, 3.0, f"l' = {lp:.3f}", '#CC5500')
+
+    # Formatting plot
+    ax.set_ylim(-y_limit, y_limit)
+    all_x = [A1, A2, P, Pp, F, Fp, O, I]
+    ax.set_xlim(min(all_x) - 0.1, max(all_x) + 0.1)
+
+    # Remove axis labels
+    ax.set_xlabel('')
+    ax.set_ylabel('')
+
+    # Remove ticks and tick labels
+    ax.set_xticks([])
+    ax.set_yticks([])
+
+    ax.grid(True, which='both', linestyle=':', alpha=0.3)
+
+    plt.tight_layout()
+    plt.show()
+    
 def drawToricImaging(F, S, C, M, A, MList): 
 
   fig = plt.figure(figsize = (6, 6))
